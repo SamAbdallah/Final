@@ -1,11 +1,12 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
+import OnBoarding from './pages/onBoarding';
+import OnBoarding2 from './pages/Onboarding2';
 
 export default function App() {
   return (
     <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
+      <OnBoarding2></OnBoarding2>
     </View>
   );
 }
