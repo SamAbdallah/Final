@@ -36,7 +36,7 @@ export default function App() {
   return ( 
     <NavigationContainer>  
       <Stack.Navigator> 
-        {!isLoggedIn?
+        {/* {!isLoggedIn?
         <Stack.Screen
         name='onBoarding'
         component={OnBoarding2}
@@ -48,9 +48,12 @@ export default function App() {
         <Stack.Screen name='Home'>
          {(props) => <Home {...props} Name={name} Email={email} />}
         </Stack.Screen>      
-}
-      {/* <Stack.Screen name="Profile" component={Profile}/> */}
-      </Stack.Navigator> 
+} */}
+        <Stack.Screen name='Profile'>
+         {(props) => <Profile {...props} Name={name} Email={email} />}
+        </Stack.Screen>      
+        
+        </Stack.Navigator> 
     </NavigationContainer>
 
   );

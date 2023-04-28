@@ -1,25 +1,60 @@
 import React from 'react'
-import { useState } from 'react';
-import { StyleSheet,View,Image,Text, Pressable, TextInput, ScrollView,} from 'react-native'
+import { useState,useEffect } from 'react';
+import { StyleSheet,View,Image,Text, Pressable, TextInput, ScrollView} from 'react-native'
+// import { Button } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 // import CheckBox from 'react-native-check-box'
 import { CheckBox } from '@rneui/themed';
-
-
+import * as ImagePicker from 'expo-image-picker';
+import { Button } from '@rneui/themed';
 
 
  
 function Profile({Name,Email}) {
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [isValidPhoneNumber, setIsValidPhoneNumber] = useState(false)
   const [checked1, setChecked1] = React.useState(true);
   const [checked2, setChecked2] = React.useState(true);
   const [checked3, setChecked3] = React.useState(true);
   const [checked4, setChecked4] = React.useState(true);
+  const [image, setImage] = useState(null);
+
 
   const toggleCheckbox = () => setChecked1(!checked1);
   const toggleCheckbox2 = () => setChecked2(!checked2);
   const toggleCheckbox3= () => setChecked3(!checked3);
   const toggleCheckbox4 = () => setChecked4(!checked4);
 
+  
+
+  function isValidLebaneseNumber(number) {
+    const numericNumber = number.replace(/\D/g, '');
+
+    return /^(\+961)?(7\d{7})$/.test(numericNumber);
+  }
+
+
+  const handlePhoneNumberChange = (value) => {
+    setPhoneNumber(value);
+    setIsValidPhoneNumber(isValidLebaneseNumber(value));
+    console.log(isValidPhoneNumber)
+  };
+
+
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    console.log(result);
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+    }
+  };
 
   return (
 <ScrollView>  
@@ -27,16 +62,21 @@ function Profile({Name,Email}) {
     <View style={styles.header1}>
      <Pressable style={styles.arrow}><Icon name="arrow-left" size={30} color="white" /></Pressable>
      <Image style={styles.image} source={require("../assets/images/Logo.png")} resizeMode='contain' />
-     <Image style={styles.image2} source={require("../assets/images/Profile.png")} resizeMode='contain'/>
+     {image && <Image source={{ uri: image }} style={{ height: 70,marginLeft:20,flex:0.4,width:100,borderRadius:10}} />}
     </View>
 
     <Text style={styles.title}>Personal Information</Text>
 
-    <View style={styles.header}>     
-     <Image style={styles.image3} source={require("../assets/images/Profile.png")} resizeMode='contain'/>
-     <Pressable><Text style={styles.buttons}>Change</Text></Pressable>
-     <Pressable><Text style={styles.buttons}>Remove</Text></Pressable>
+
+    <View style={styles.header}>
+      {image && <Image source={{ uri: image }} style={{ height: 70,marginLeft:20,marginRight:20,flex:0.7,width:100,borderRadius:20}} />}
+      <Button title="Change" onPress={pickImage} buttonStyle={styles.buttons}/>
+      
+      <Button title="Remove" buttonStyle={styles.buttons}/>
+
     </View>
+
+    
     <View style={styles.form}>
       <Text>First Name:</Text>
       <TextInput style={styles.input}/>
@@ -45,7 +85,7 @@ function Profile({Name,Email}) {
       <Text>Email:</Text>
       <TextInput style={styles.input} keyboardType='email-address'/>
       <Text>Phone Number:</Text>
-      <TextInput style={styles.input} keyboardType='phone-pad'/>
+      <TextInput style={styles.input} keyboardType='phone-pad'  onChangeText={handlePhoneNumberChange} value={phoneNumber}/>
 
     </View>
 
