@@ -12,23 +12,25 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
  
-function Profile({Name,Email}) {
+function Profile({Name,Email,navigation}) {
+
   useEffect(() => {
     const retrieveData = async () => {
       try {
-    const FNAME= await AsyncStorage.getItem('fname');
+    const FNAME= await AsyncStorage.getItem('name');
     const LNAME= await AsyncStorage.getItem('lname');
-    const PHONE= await AsyncStorage.getItem('phoneNumber');
     const EMAIL= await AsyncStorage.getItem('email');
+
+    const PHONE= await AsyncStorage.getItem('phoneNumber');
     const IMAGE= await AsyncStorage.getItem('image');
     const CHECK1=await AsyncStorage.getItem('checkBox1');
     const CHECK2=await AsyncStorage.getItem('checkBox2',);
     const CHECK3=await AsyncStorage.getItem('checkBox3');
     const CHECK4=await AsyncStorage.getItem('checkBox4');
     setFname(FNAME)
-    setLname(LNAME)
+    setLname(LNAME)  
     setEmail(EMAIL)
-    setPhoneNumber(PHONE)
+    setPhoneNumber(PHONE) 
     setImage(IMAGE)
     setChecked1(CHECK1=='true')
     setChecked2(CHECK2=='true')
@@ -98,7 +100,7 @@ function Profile({Name,Email}) {
 
   const handleSave=async()=>{
     try{
-    await AsyncStorage.setItem('fname', fname);
+    await AsyncStorage.setItem('name', fname);
     await AsyncStorage.setItem('lname', lname);
     await AsyncStorage.setItem('phoneNumber', phoneNumber);
     await AsyncStorage.setItem('email', email);
@@ -114,6 +116,20 @@ function Profile({Name,Email}) {
       console.log(err)
     }
   }
+  const handleLogOut=async()=>{
+    await AsyncStorage.removeItem('name');
+    await AsyncStorage.removeItem('lname');
+    await AsyncStorage.removeItem('phoneNumber');
+    await AsyncStorage.removeItem('email');
+    await AsyncStorage.removeItem('image');
+    await AsyncStorage.removeItem('checkBox1'); 
+    await AsyncStorage.removeItem('checkBox2',);
+    await AsyncStorage.removeItem('checkBox3');
+    await AsyncStorage.removeItem('checkBox4');
+    setEmail(null)
+
+    
+  }  
 
   return (
 <ScrollView>  
@@ -206,7 +222,7 @@ function Profile({Name,Email}) {
    
     </View>
 
-    <Pressable style={styles.logOut}><Text style={styles.txt2}>Log Out</Text></Pressable>
+    <Pressable style={styles.logOut} onPress={handleLogOut}><Text style={styles.txt2}>Log Out</Text></Pressable>
 
     <View style={styles.final}> 
       

@@ -12,12 +12,15 @@ export default function App() {
   const [isLoggedIn,setIsLoggedIn]=useState(false)
   const [name,setName]=useState('')
   const [email,setEmail]=useState('')
+  const [image,setImage]=useState('')
 
   useEffect(() => {
     const retrieveData = async () => {
       try {
         const nameValue = await AsyncStorage.getItem('name');
         const emailValue = await AsyncStorage.getItem('email');
+
+
         if (nameValue !== null && emailValue!==null) {
           setName(nameValue)
           setEmail(emailValue)
@@ -25,7 +28,7 @@ export default function App() {
           setIsLoggedIn(true)
 
         }
-
+   
       } catch (e) {
         console.log(e);
       }
@@ -33,10 +36,11 @@ export default function App() {
     retrieveData();
   }, []);
   const Stack=createNativeStackNavigator()
+  {console.log(isLoggedIn)}
   return ( 
     <NavigationContainer>  
       <Stack.Navigator> 
-        {/* {!isLoggedIn?
+        {!isLoggedIn? 
         <Stack.Screen
         name='onBoarding'
         component={OnBoarding2}
@@ -48,7 +52,7 @@ export default function App() {
         <Stack.Screen name='Home'>
          {(props) => <Home {...props} Name={name} Email={email} />}
         </Stack.Screen>      
-} */}
+}
         <Stack.Screen name='Profile'>
          {(props) => <Profile {...props} Name={name} Email={email} />}
         </Stack.Screen>      

@@ -2,10 +2,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useState } from 'react';
 import { Image, Text, StyleSheet, Pressable, TextInput, View, KeyboardAvoidingView} from 'react-native';
 import { useEffect } from 'react';
-
+  
 function OnBoarding2({isLoggedin,setIsLoggedIn}) {
     const [name,setName]=useState('')
-    const [email,setEmail]=useState('')
+    const [email,setEmail]=useState('')  
     const [isValidEmail, setIsValidEmail] = useState(false);
     const [keyboardOpen, setKeyboardOpen] = useState(false);
 
