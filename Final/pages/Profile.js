@@ -7,11 +7,49 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { CheckBox } from '@rneui/themed';
 import * as ImagePicker from 'expo-image-picker';
 import { Button } from '@rneui/themed';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 
  
 function Profile({Name,Email}) {
+  useEffect(() => {
+    const retrieveData = async () => {
+      try {
+    const FNAME= await AsyncStorage.getItem('fname');
+    const LNAME= await AsyncStorage.getItem('lname');
+    const PHONE= await AsyncStorage.getItem('phoneNumber');
+    const EMAIL= await AsyncStorage.getItem('email');
+    const IMAGE= await AsyncStorage.getItem('image');
+    const CHECK1=await AsyncStorage.getItem('checkBox1');
+    const CHECK2=await AsyncStorage.getItem('checkBox2',);
+    const CHECK3=await AsyncStorage.getItem('checkBox3');
+    const CHECK4=await AsyncStorage.getItem('checkBox4');
+    setFname(FNAME)
+    setLname(LNAME)
+    setEmail(EMAIL)
+    setPhoneNumber(PHONE)
+    setImage(IMAGE)
+    setChecked1(CHECK1=='true')
+    setChecked2(CHECK2=='true')
+    setChecked3(CHECK3=='true')
+    setChecked4(CHECK4=='true')
+
+
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    retrieveData();
+  }, []);
+
+
+
+
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [fname,setFname]=useState('')
+  const [lname,setLname]=useState('')
+  const [email,setEmail]=useState('')
   const [isValidPhoneNumber, setIsValidPhoneNumber] = useState(false)
   const [checked1, setChecked1] = React.useState(true);
   const [checked2, setChecked2] = React.useState(true);
@@ -24,7 +62,10 @@ function Profile({Name,Email}) {
   const toggleCheckbox2 = () => setChecked2(!checked2);
   const toggleCheckbox3= () => setChecked3(!checked3);
   const toggleCheckbox4 = () => setChecked4(!checked4);
-
+  
+  const handleRemove=()=>{
+    setImage(null)
+  }
   
 
   function isValidLebaneseNumber(number) {
@@ -37,9 +78,9 @@ function Profile({Name,Email}) {
   const handlePhoneNumberChange = (value) => {
     setPhoneNumber(value);
     setIsValidPhoneNumber(isValidLebaneseNumber(value));
-    console.log(isValidPhoneNumber)
-  };
 
+  };
+ 
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -48,13 +89,31 @@ function Profile({Name,Email}) {
       aspect: [4, 3],
       quality: 1,
     });
-
-    console.log(result);
+ 
 
     if (!result.canceled) {
       setImage(result.assets[0].uri);
     }
   };
+
+  const handleSave=async()=>{
+    try{
+    await AsyncStorage.setItem('fname', fname);
+    await AsyncStorage.setItem('lname', lname);
+    await AsyncStorage.setItem('phoneNumber', phoneNumber);
+    await AsyncStorage.setItem('email', email);
+    await AsyncStorage.setItem('image', image);
+    await AsyncStorage.setItem('checkBox1', checked1.toString());
+    await AsyncStorage.setItem('checkBox2', checked2.toString());
+    await AsyncStorage.setItem('checkBox3', checked3.toString());
+    await AsyncStorage.setItem('checkBox4', checked4.toString());
+
+    console.log(fname,lname,phoneNumber,email,image,checked1,checked2,checked3,checked4)
+    }
+    catch(err){
+      console.log(err)
+    }
+  }
 
   return (
 <ScrollView>  
@@ -62,28 +121,28 @@ function Profile({Name,Email}) {
     <View style={styles.header1}>
      <Pressable style={styles.arrow}><Icon name="arrow-left" size={30} color="white" /></Pressable>
      <Image style={styles.image} source={require("../assets/images/Logo.png")} resizeMode='contain' />
-     {image && <Image source={{ uri: image }} style={{ height: 70,marginLeft:20,flex:0.4,width:100,borderRadius:10}} />}
+     {image ? <Image source={ {uri:image}} style={{ height: 70,marginLeft:20,flex:0.4,width:100,borderRadius:10}}/>:<View style={styles.dummy}><Text>{Name[0]}{Name[1]}</Text></View>}
     </View>
 
-    <Text style={styles.title}>Personal Information</Text>
+    <Text style={styles.title}>Personal Information</Text> 
 
-
+ 
     <View style={styles.header}>
-      {image && <Image source={{ uri: image }} style={{ height: 70,marginLeft:20,marginRight:20,flex:0.7,width:100,borderRadius:20}} />}
+      {image ?<Image source={{ uri: image }} style={{ height: 70,marginLeft:20,marginRight:20,flex:0.7,width:100,borderRadius:20}} />:<View style={styles.dummy2}><Text>{Name[0]}{Name[1]}</Text></View>}
       <Button title="Change" onPress={pickImage} buttonStyle={styles.buttons}/>
       
-      <Button title="Remove" buttonStyle={styles.buttons}/>
+      <Button title="Remove" buttonStyle={styles.buttons} onPress={handleRemove} />
 
     </View>
 
     
-    <View style={styles.form}>
+      <View style={styles.form}> 
       <Text>First Name:</Text>
-      <TextInput style={styles.input}/>
+      <TextInput style={styles.input} value={fname} onChangeText={(fname)=>{setFname(fname)}}/>
       <Text>Last Name:</Text>
-      <TextInput style={styles.input} />
+      <TextInput style={styles.input} value={lname} onChangeText={(lname)=>{setLname(lname)}} />
       <Text>Email:</Text>
-      <TextInput style={styles.input} keyboardType='email-address'/>
+      <TextInput style={styles.input} keyboardType='email-address' value={email} onChangeText={(email)=>{setEmail(email)}}/>
       <Text>Phone Number:</Text>
       <TextInput style={styles.input} keyboardType='phone-pad'  onChangeText={handlePhoneNumberChange} value={phoneNumber}/>
 
@@ -153,7 +212,7 @@ function Profile({Name,Email}) {
       
     <Pressable style={styles.discard}><Text style={styles.txt3}>Discard Changes</Text></Pressable>
 
-    <Pressable style={styles.save}><Text  style={styles.txt4}>Save Changes</Text></Pressable>
+    <Pressable style={styles.save} onPress={handleSave}><Text  style={styles.txt4}>Save Changes</Text></Pressable>
     
     
     </View>
@@ -194,15 +253,15 @@ const styles=StyleSheet.create({
       arrow: {
         backgroundColor:'lightgrey',
         marginLeft:20,
-        flex: 0.1,
+        flex: 0.2,
         borderRadius:40,
         padding:7,
-        marginRight:20
+        marginRight:40
         
     
       },
   image: {
-        flex: 0.3,
+        flex: 0.4,
         width:150,
         marginRight:20
     
@@ -293,6 +352,23 @@ const styles=StyleSheet.create({
     borderWidth:2,
     borderColor:'grey'
   },
+  dummy:{
+    backgroundColor:'gold',  
+    borderRadius:20,
+    height:50,
+    padding:10,
+    flex:0.2,
+    alignItems:'center'
+  },
+  dummy2:{
+    backgroundColor:'gold',  
+    borderRadius:20,
+    marginLeft:30,
+    height:50,
+    padding:10,
+    flex:0.5,
+    alignItems:'center'
+  }
 
 })
 export default Profile
