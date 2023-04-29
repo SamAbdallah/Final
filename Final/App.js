@@ -56,6 +56,8 @@ export default function App() {
         <Stack.Screen name='Profile'>
          {(props) => <Profile {...props} Name={name} Email={email} />}
         </Stack.Screen>      
+   
+        
         
         </Stack.Navigator> 
     </NavigationContainer>
