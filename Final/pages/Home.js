@@ -31,41 +31,7 @@ function Home({ Name, Email }) {
     });
   }, []);
 
-  // useEffect(() => {
-  //   db.transaction((tx) => {
-  //     tx.executeSql(
-  //       'DELETE FROM menu',
-  //       [],
-  //       () => {
-  //         const insertionPromises = data.map((item) => {
-  //           return new Promise((resolve, reject) => {
-  //             tx.executeSql(
-  //               'INSERT INTO menu (name,category, description, price) VALUES (? , ? , ? , ?)',
-  //               [item.name, item.category, item.description, item.price],
-  //               () => {
-  //                 resolve();
-  //               },
-  //               (tx, error) => {
-  //                 reject(error);
-  //               }
-  //             );
-  //           });
-  //         });
 
-  //         Promise.all(insertionPromises)
-  //           .then(() => {
-  //             console.log('Data inserted successfully');
-  //           })
-  //           .catch((error) => {
-  //             console.log('Error while inserting data:', error);
-  //           });
-  //       },
-  //       (tx, error) => {
-  //         console.log('Error while deleting data:', error);
-  //       }
-  //     );
-  //   });
-  // }, [data]);
 
   const createTableAndInsertItems = () => {
     db.transaction((tx) => {
