@@ -1,37 +1,151 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Text, StyleSheet, View, Image, FlatList, ScrollView } from 'react-native';
-import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Button } from '@rneui/themed';
 import * as SQLite from 'expo-sqlite';
 import { openDatabase } from 'expo-sqlite';
 
- 
 function Home({ Name, Email }) {
-  // const l=["Bruschetta.png","Greek salad.png","Grilled fish.png","Lemon dessert.png","Pasta.png"]
-  // console.log(l[Math.floor(Math.random() * l.length)])
   const [image, setImage] = useState('');
   const [data, setData] = useState([]);
 
-  const dbName = 'myDatabase.db';
+  const dbName = 'Lemon';
 
-  const db = openDatabase(dbName);
-  
-  db.transaction((tx) => {
-    tx.executeSql(
-      `SELECT name FROM sqlite_master WHERE type='table' AND name='myTable';`,
-      [],
-      (_, result) => {
-        if (result.rows.length > 0) {
-          console.log('The database exists and contains a table called "myTable"');
-        } else {
-          console.log('The database does not exist or does not contain a table called "myTable"');
+  const db = SQLite.openDatabase(dbName);
+
+  useEffect(() => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        'create table if not exists menu (id  INTEGER PRIMARY KEY AUTOINCREMENT, description text, name text,category text,price integer)',
+        [],
+        () => {
+          console.log('Table created');
+        },
+        (error) => {
+          console.error(error);
         }
-      }
-    );
-  });
+      );
+    });
+  }, []);
 
+  useEffect(() => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        'DELETE FROM menu',
+        [],
+        () => {
+          const insertionPromises = data.map((item) => {
+            return new Promise((resolve, reject) => {
+              tx.executeSql(
+                'INSERT INTO menu (name,category, description, price) VALUES (? , ? , ? , ?)',
+                [item.name, item.category, item.description, item.price],
+                () => {
+                  resolve();
+                },
+                (tx, error) => {
+                  reject(error);
+                }
+              );
+            });
+          });
+
+          Promise.all(insertionPromises)
+            .then(() => {
+              console.log('Data inserted successfully');
+            })
+            .catch((error) => {
+              console.log('Error while inserting data:', error);
+            });
+        },
+        (tx, error) => {
+          console.log('Error while deleting data:', error);
+        }
+      );
+    });
+  }, [data]);
+
+  const createTableAndInsertItems = () => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        'CREATE TABLE IF NOT EXISTS menu (name, description, id, price)',
+        [],
+        () => {
+          console.log('Table created');
+        },
+        (error) => {
+          console.error(error);
+        }
+      ); 
+
+      data.map((item) => {
+        tx.executeSql(
+          'INSERT INTO menu (name, description, id, price) VALUES (?, ?, ?, ?)',
+          [item.name, item.description, item.id, item.price],
+          () => {
+            console.log(`${item.name} inserted`);
+          },
+          (error) => {
+            console.error(error);
+          }
+        );
+      });
+    });
+  };
+
+  useEffect(() => {
+    createTableAndInsertItems();
+  }, []);
+
+
+  useEffect(() => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        'SELECT * FROM menu',
+        [],
+        (_, { rows }) => {
+          console.log('Retrieved data:', rows._array);
+          setData(rows._array)
+        },
+        (error) => {
+          console.error('Error while retrieving data:', error);
+        }
+      );
+    });
+  }, []);
+
+
+// const getDishes = () => {
+//   return new Promise((resolve, reject) => {
+//     db.transaction(
+//       tx => {
+//         tx.executeSql(
+//           'select * from menu',
+//           [],
+//           (_, { rows: { _array } }) => {
+//             setData(_array);
+//             console.log(_array);
+//             resolve();
+//           },
+//           (_, error) => {
+//             console.log('Error while retrieving data:', error);
+//             reject(error);
+//           }
+//         );
+//       }
+//     ); 
+//   });
+// }
+
+// useEffect(async () => {
+//   try {
+//     await getDishes(setData);
+//   } catch (error) {
+//     console.log('Error while getting dishes:', error);
+//   }
+// }, []);
+
+// useEffect(()=>)
 
 
 
@@ -240,4 +354,4 @@ const styles = StyleSheet.create({
 
 })
 
-export default Home;
+export default Home
