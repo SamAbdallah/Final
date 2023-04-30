@@ -9,6 +9,8 @@ import { openDatabase } from 'expo-sqlite';
 function Home({ Name, Email }) {
   const [image, setImage] = useState('');
   const [data, setData] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+
 
   const dbName = 'Lemon';
 
@@ -29,46 +31,46 @@ function Home({ Name, Email }) {
     });
   }, []);
 
-  useEffect(() => {
-    db.transaction((tx) => {
-      tx.executeSql(
-        'DELETE FROM menu',
-        [],
-        () => {
-          const insertionPromises = data.map((item) => {
-            return new Promise((resolve, reject) => {
-              tx.executeSql(
-                'INSERT INTO menu (name,category, description, price) VALUES (? , ? , ? , ?)',
-                [item.name, item.category, item.description, item.price],
-                () => {
-                  resolve();
-                },
-                (tx, error) => {
-                  reject(error);
-                }
-              );
-            });
-          });
+  // useEffect(() => {
+  //   db.transaction((tx) => {
+  //     tx.executeSql(
+  //       'DELETE FROM menu',
+  //       [],
+  //       () => {
+  //         const insertionPromises = data.map((item) => {
+  //           return new Promise((resolve, reject) => {
+  //             tx.executeSql(
+  //               'INSERT INTO menu (name,category, description, price) VALUES (? , ? , ? , ?)',
+  //               [item.name, item.category, item.description, item.price],
+  //               () => {
+  //                 resolve();
+  //               },
+  //               (tx, error) => {
+  //                 reject(error);
+  //               }
+  //             );
+  //           });
+  //         });
 
-          Promise.all(insertionPromises)
-            .then(() => {
-              console.log('Data inserted successfully');
-            })
-            .catch((error) => {
-              console.log('Error while inserting data:', error);
-            });
-        },
-        (tx, error) => {
-          console.log('Error while deleting data:', error);
-        }
-      );
-    });
-  }, [data]);
+  //         Promise.all(insertionPromises)
+  //           .then(() => {
+  //             console.log('Data inserted successfully');
+  //           })
+  //           .catch((error) => {
+  //             console.log('Error while inserting data:', error);
+  //           });
+  //       },
+  //       (tx, error) => {
+  //         console.log('Error while deleting data:', error);
+  //       }
+  //     );
+  //   });
+  // }, [data]);
 
   const createTableAndInsertItems = () => {
     db.transaction((tx) => {
       tx.executeSql(
-        'CREATE TABLE IF NOT EXISTS menu (name, description, id, price)',
+        'CREATE TABLE IF NOT EXISTS menu (name TEXT, description TEXT, id INTEGER PRIMARY KEY AUTOINCREMENT, price REAL, category TEXT)',
         [],
         () => {
           console.log('Table created');
@@ -77,26 +79,39 @@ function Home({ Name, Email }) {
           console.error(error);
         }
       ); 
-
-      data.map((item) => {
-        tx.executeSql(
-          'INSERT INTO menu (name, description, id, price) VALUES (?, ?, ?, ?)',
-          [item.name, item.description, item.id, item.price],
-          () => {
-            console.log(`${item.name} inserted`);
-          },
-          (error) => {
-            console.error(error);
-          }
-        );
-      });
+  
+      tx.executeSql(
+        'DELETE FROM menu',
+        [],
+        () => { 
+          data.map((item) => {
+            tx.executeSql(
+              'INSERT INTO menu (name, description, id, price, category) VALUES (?, ?, ?, ?, ?)',
+              [item.name, item.description, item.id, item.price, item.category],
+              () => {
+                console.log(`${item.name} inserted`);
+              },
+              (error) => {
+                console.error(error);
+              }
+            );
+          });
+        },
+        (error) => {
+          console.error(error);
+        }
+      );
     });
   };
+  
 
   useEffect(() => {
     createTableAndInsertItems();
   }, []);
 
+
+
+  
 
   useEffect(() => {
     db.transaction((tx) => {
@@ -117,7 +132,7 @@ function Home({ Name, Email }) {
 
 
 
-
+ 
 
   useEffect(() => {
     fetch('https://raw.githubusercontent.com/Meta-Mobile-Developer-PC/Working-With-Data-API/main/capstone.json')
@@ -139,6 +154,9 @@ function Home({ Name, Email }) {
     };
     retrieveData();
   }, []);
+
+
+
 
   
   return (
@@ -175,16 +193,17 @@ function Home({ Name, Email }) {
       </View>
       <Text style={styles.Order}>Order For Delivery!</Text>
 
-      <View style={styles.categroy}>
-        <Button title="Starters" buttonStyle={styles.buttons} titleStyle={{ color: 'black' }} />
-        <Button title="Main" buttonStyle={styles.buttons} titleStyle={{ color: 'black' }} />
-        <Button title="Desserts" buttonStyle={styles.buttons} titleStyle={{ color: 'black' }} />
-        <Button title="Drinks" buttonStyle={styles.buttons} titleStyle={{ color: 'black' }} />
+      <View style={styles.categroy}>        
+        <Button title="All" buttonStyle={styles.buttons} titleStyle={{ color: 'black' }}       onPress={() => setSelectedCategory('All')}/>
+
+        <Button title="starters" buttonStyle={styles.buttons} titleStyle={{ color: 'black' }}  onPress={() => setSelectedCategory('starters')} />
+        <Button title="mains" buttonStyle={styles.buttons} titleStyle={{ color: 'black' }}     onPress={() => setSelectedCategory('mains')}/>
+        <Button title="desserts" buttonStyle={styles.buttons} titleStyle={{ color: 'black' }}  onPress={() => setSelectedCategory('desserts')}/>
       </View>
 
       <View style={{ borderBottomWidth: 1, borderBottomColor: 'lightgrey', margin: 10 }} />
-
-      <FlatList
+      {selectedCategory=='All'?
+       <FlatList
         style={styles.list}    
         data={data} 
         renderItem={({ item }) => (
@@ -201,6 +220,31 @@ function Home({ Name, Email }) {
         keyExtractor={(item, index) => index.toString()}
         contentContainerStyle={{ flexGrow: 1 }}
       />
+      
+      :
+
+      <FlatList
+        data={data.filter(item => item.category === selectedCategory)}
+        renderItem={({ item }) => (
+        <View style={styles.ItemContainer}>
+        <View style={styles.desc}>
+        <Text style={styles.name}>{item.name}</Text>
+        <Text style={styles.description1}>{item.description}</Text>
+        <Text style={styles.price}>$ {item.price}</Text>
+        </View>
+        <Image source={require("../assets/images/Bruschetta.png")} style={styles.image2}/>
+
+        </View>
+  )}
+  keyExtractor={(item, index) => index.toString()}
+  contentContainerStyle={{ flexGrow: 1 }}
+
+/>
+      
+      
+      
+      
+      }
     </ScrollView>
   );
 }
