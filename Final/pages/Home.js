@@ -115,37 +115,7 @@ function Home({ Name, Email }) {
   }, []);
 
 
-// const getDishes = () => {
-//   return new Promise((resolve, reject) => {
-//     db.transaction(
-//       tx => {
-//         tx.executeSql(
-//           'select * from menu',
-//           [],
-//           (_, { rows: { _array } }) => {
-//             setData(_array);
-//             console.log(_array);
-//             resolve();
-//           },
-//           (_, error) => {
-//             console.log('Error while retrieving data:', error);
-//             reject(error);
-//           }
-//         );
-//       }
-//     ); 
-//   });
-// }
 
-// useEffect(async () => {
-//   try {
-//     await getDishes(setData);
-//   } catch (error) {
-//     console.log('Error while getting dishes:', error);
-//   }
-// }, []);
-
-// useEffect(()=>)
 
 
 
