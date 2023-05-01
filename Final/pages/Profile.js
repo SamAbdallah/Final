@@ -8,11 +8,13 @@ import { CheckBox } from '@rneui/themed';
 import * as ImagePicker from 'expo-image-picker';
 import { Button } from '@rneui/themed';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
 
 
 
  
 function Profile({Name,Email,navigation}) {
+
 
   useEffect(() => {
     const retrieveData = async () => {
@@ -127,6 +129,7 @@ function Profile({Name,Email,navigation}) {
     await AsyncStorage.removeItem('checkBox3');
     await AsyncStorage.removeItem('checkBox4');
     setEmail(null)
+    navigation.navigate('onBoarding')
 
     
   }  
@@ -226,7 +229,7 @@ function Profile({Name,Email,navigation}) {
 
     <View style={styles.final}> 
       
-    <Pressable style={styles.discard}><Text style={styles.txt3}>Discard Changes</Text></Pressable>
+    <Pressable style={styles.discard}><Text style={styles.txt3} >Discard Changes</Text></Pressable>
 
     <Pressable style={styles.save} onPress={handleSave}><Text  style={styles.txt4}>Save Changes</Text></Pressable>
     

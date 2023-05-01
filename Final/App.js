@@ -8,8 +8,9 @@ import Home from './pages/Home';
 import Profile from './pages/Profile';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function App() {
+  
  
-  const [isLoggedIn,setIsLoggedIn]=useState(false)
+  const [isLoggedIn,setIsLoggedIn]=useState(false) 
   const [name,setName]=useState('')
   const [email,setEmail]=useState('')
   const [image,setImage]=useState('')
@@ -39,27 +40,31 @@ export default function App() {
   {console.log(isLoggedIn)}
   return ( 
     <NavigationContainer>  
-      <Stack.Navigator> 
-        {!isLoggedIn? 
-        <Stack.Screen
-        name='onBoarding'
-        component={OnBoarding2}
-        options={{ title: 'OnBoarding2' }}
-        initialParams={{ Name: name, Email: email }}
-        isLoggedIn={isLoggedIn}
-        setIsLoggedIn={setIsLoggedIn}
-      /> :
-        <Stack.Screen name='Home'>
-         {(props) => <Home {...props} Name={name} Email={email} />}
-        </Stack.Screen>      
-}
-        <Stack.Screen name='Profile'>
-         {(props) => <Profile {...props} Name={name} Email={email} />}
-        </Stack.Screen>      
-   
-        
-        
-        </Stack.Navigator> 
+<Stack.Navigator>
+  {!isLoggedIn ? (
+    <Stack.Screen
+      name='onBoarding'
+      component={OnBoarding2}
+      options={{ title: 'OnBoarding2' }} 
+      initialParams={{ Name: name, Email: email }}
+      isLoggedIn={isLoggedIn}
+      setIsLoggedIn={setIsLoggedIn}
+    />
+  ) : ( 
+    <>
+      <Stack.Screen name='Home'>
+        {(props) => <Home {...props} Name={name} Email={email} />}
+      </Stack.Screen>   
+      <Stack.Screen name='Profile'>
+        {(props) => <Profile {...props} Name={name} Email={email} />} 
+      </Stack.Screen>
+
+
+
+
+    </>
+  )}
+</Stack.Navigator>
     </NavigationContainer>
 
   );

@@ -5,15 +5,15 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { Button } from '@rneui/themed';
 import * as SQLite from 'expo-sqlite';
 import { openDatabase } from 'expo-sqlite';
-
+  
 function Home({ Name, Email }) {
   const [image, setImage] = useState('');
-  const [data, setData] = useState([]);
+  const [data, setData] = useState([]);  
   const [selectedCategory, setSelectedCategory] = useState(null);
-
+ 
 
   const dbName = 'Lemon';
-
+ 
   const db = SQLite.openDatabase(dbName);
 
   useEffect(() => {
